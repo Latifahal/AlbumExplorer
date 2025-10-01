@@ -1,0 +1,6 @@
+/AlbumWiki.fdb
+*.~*   # backup files
+*.exe
+*.o
+*.ppu
+*.compiled

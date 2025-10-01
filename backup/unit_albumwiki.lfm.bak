@@ -1,0 +1,125 @@
+object Form1: TForm1
+  Left = 1977
+  Height = 510
+  Top = 378
+  Width = 840
+  Caption = 'AlbumExplorer'
+  ClientHeight = 510
+  ClientWidth = 840
+  LCLVersion = '2.2.6.0'
+  object ButtonLoadAlbums: TButton
+    Left = 20
+    Height = 30
+    Top = 20
+    Width = 100
+    Caption = 'Load Albums'
+    OnClick = ButtonLoadAlbumsClick
+    TabOrder = 1
+  end
+  object lblTitle: TLabel
+    Left = 140
+    Height = 19
+    Top = 20
+    Width = 26
+    Caption = 'Title'
+    ParentColor = False
+  end
+  object edtTitle: TEdit
+    Left = 190
+    Height = 31
+    Top = 20
+    Width = 150
+    TabOrder = 2
+  end
+  object lblArtist: TLabel
+    Left = 360
+    Height = 19
+    Top = 20
+    Width = 34
+    Caption = 'Artist'
+    ParentColor = False
+  end
+  object edtArtist: TEdit
+    Left = 410
+    Height = 31
+    Top = 20
+    Width = 150
+    TabOrder = 3
+  end
+  object lblYear: TLabel
+    Left = 580
+    Height = 19
+    Top = 20
+    Width = 28
+    Caption = 'Year'
+    ParentColor = False
+  end
+  object edtYear: TEdit
+    Left = 620
+    Height = 31
+    Top = 20
+    Width = 60
+    TabOrder = 4
+  end
+  object ButtonAddAlbum: TButton
+    Left = 700
+    Height = 30
+    Top = 20
+    Width = 100
+    Caption = 'Add Album'
+    OnClick = ButtonAddAlbumClick
+    TabOrder = 5
+  end
+  object ButtonDeleteAlbum: TButton
+    Left = 700
+    Height = 30
+    Top = 60
+    Width = 100
+    Caption = 'Delete Album'
+    OnClick = ButtonDeleteAlbumClick
+    TabOrder = 6
+  end
+  object DBGrid1: TDBGrid
+    Left = 20
+    Height = 316
+    Top = 92
+    Width = 780
+    Align = alCustom
+    Color = clWindow
+    Columns = <>
+    DataSource = DataSource1
+    TabOrder = 0
+  end
+  object SQLConnector1: TSQLConnector
+    Connected = False
+    LoginPrompt = False
+    DatabaseName = '/home/lalbrecht/firebird_temp/AlbumWiki.fdb'
+    KeepConnection = False
+    Transaction = SQLTransaction1
+    ConnectorType = 'Firebird'
+    Left = 53
+    Top = 448
+  end
+  object SQLTransaction1: TSQLTransaction
+    Active = False
+    Database = SQLConnector1
+    Left = 160
+    Top = 448
+  end
+  object SQLQuery1: TSQLQuery
+    PacketRecords = 1
+    UniDirectional = True
+    FieldDefs = <>
+    Database = SQLConnector1
+    Transaction = SQLTransaction1
+    Params = <>
+    Macros = <>
+    Left = 264
+    Top = 448
+  end
+  object DataSource1: TDataSource
+    DataSet = SQLQuery1
+    Left = 360
+    Top = 448
+  end
+end
