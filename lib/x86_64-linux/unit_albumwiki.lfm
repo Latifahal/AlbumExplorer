@@ -1,107 +1,161 @@
 object Form1: TForm1
   Left = 1977
-  Height = 510
+  Height = 483
   Top = 378
-  Width = 840
+  Width = 827
   Caption = 'AlbumExplorer'
-  ClientHeight = 510
-  ClientWidth = 840
+  ClientHeight = 483
+  ClientWidth = 827
+  Color = 6171435
+  Font.Color = clWhite
   OnCreate = FormCreate
   object ButtonLoadAlbums: TButton
-    Left = 20
+    Left = 608
     Height = 30
-    Top = 20
-    Width = 100
+    Top = 432
+    Width = 192
     Caption = 'Load Albums'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
     OnClick = ButtonLoadAlbumsClick
+    ParentFont = False
     TabOrder = 0
   end
   object lblTitle: TLabel
-    Left = 140
-    Height = 19
-    Top = 20
-    Width = 26
+    Left = 20
+    Height = 18
+    Top = 72
+    Width = 30
     Caption = 'Title'
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
     ParentColor = False
+    ParentFont = False
   end
   object edtTitle: TEdit
-    Left = 190
+    Left = 20
     Height = 31
-    Top = 20
-    Width = 150
+    Top = 96
+    Width = 196
+    Font.Color = clNavy
+    ParentFont = False
     TabOrder = 1
   end
   object lblArtist: TLabel
-    Left = 360
-    Height = 19
-    Top = 20
-    Width = 34
+    Left = 216
+    Height = 18
+    Top = 72
+    Width = 37
     Caption = 'Artist'
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
     ParentColor = False
+    ParentFont = False
   end
   object edtArtist: TEdit
-    Left = 410
+    Left = 216
     Height = 31
-    Top = 20
-    Width = 150
+    Top = 96
+    Width = 192
+    Font.Color = clNavy
+    ParentFont = False
     TabOrder = 2
   end
   object lblYear: TLabel
-    Left = 580
-    Height = 19
-    Top = 20
-    Width = 28
+    Left = 408
+    Height = 18
+    Top = 72
+    Width = 29
     Caption = 'Year'
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
     ParentColor = False
+    ParentFont = False
   end
   object edtYear: TEdit
-    Left = 620
+    Left = 408
     Height = 31
-    Top = 20
-    Width = 60
+    Top = 96
+    Width = 72
+    Font.Color = clNavy
+    ParentFont = False
     TabOrder = 3
   end
   object ButtonAddAlbum: TButton
-    Left = 700
-    Height = 30
-    Top = 20
+    Left = 496
+    Height = 31
+    Top = 96
     Width = 100
+    Align = alCustom
     Caption = 'Add Album'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
     OnClick = ButtonAddAlbumClick
+    ParentFont = False
     TabOrder = 4
   end
   object ButtonDeleteAlbum: TButton
     Left = 700
-    Height = 30
-    Top = 60
+    Height = 31
+    Top = 96
     Width = 100
     Caption = 'Delete Album'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
     OnClick = ButtonDeleteAlbumClick
+    ParentFont = False
     TabOrder = 5
   end
   object StringGrid1: TStringGrid
-    Left = 0
-    Height = 344
-    Top = 166
-    Width = 840
-    Align = alBottom
+    Left = 20
+    Height = 264
+    Top = 152
+    Width = 780
+    Align = alCustom
+    BorderSpacing.CellAlignHorizontal = ccaCenter
     ColCount = 4
+    DefaultColWidth = 195
+    Font.Color = clNavy
+    ParentFont = False
     RowCount = 1
     TabOrder = 6
+  end
+  object Button1: TButton
+    Left = 598
+    Height = 31
+    Top = 96
+    Width = 100
+    Caption = 'Button1'
+    TabOrder = 7
   end
   object IBConnection1: TIBConnection
     Connected = False
     LoginPrompt = False
+    DatabaseName = '/home/lalbrecht/Dokumente/First30Days/Album Wiki/data/AlbumWiki.fdb'
     KeepConnection = False
+    Transaction = SQLTransaction1
     CheckTransactionParams = False
     UseConnectionCharSetIfNone = False
-    Left = 48
-    Top = 448
+    Left = 8
+    Top = 8
   end
   object SQLTransaction1: TSQLTransaction
     Active = False
-    Left = 152
-    Top = 448
+    Database = IBConnection1
+    Left = 112
+    Top = 8
   end
   object SQLQuery1: TSQLQuery
     FieldDefs = <>
@@ -109,7 +163,7 @@ object Form1: TForm1
     Transaction = SQLTransaction1
     Params = <>
     Macros = <>
-    Left = 248
-    Top = 448
+    Left = 208
+    Top = 8
   end
 end

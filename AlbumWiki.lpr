@@ -10,8 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, unit_albumwiki in 'unit_albumwiki.pas', ibexpress
-  { you can add units after this };
+  Forms, unit_albumwiki in 'unit_albumwiki.pas';
 
 {$R *.res}
 

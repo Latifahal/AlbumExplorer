@@ -25,15 +25,6 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="ibnongui"/>
-      </Item>
-      <Item>
-        <PackageName Value="ibexpress"/>
-      </Item>
-      <Item>
-        <PackageName Value="fbintf"/>
-      </Item>
-      <Item>
         <PackageName Value="FCL"/>
       </Item>
       <Item>
@@ -61,7 +52,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="."/>
+      <OtherUnitFiles Value="/usr/lib/lazarus/2.2.6/lcl/units/x86_64-linux/"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

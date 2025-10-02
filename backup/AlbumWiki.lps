@@ -7,10 +7,7 @@
       <Unit>
         <Filename Value="AlbumWiki.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <CursorPos X="3" Y="22"/>
-        <UsageCount Value="25"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="unit_albumwiki.pas"/>
@@ -18,149 +15,142 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos Y="181"/>
-        <UsageCount Value="25"/>
+        <CursorPos X="30" Y="9"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Album Wiki/albumwiki.pas"/>
-        <ComponentName Value="Form1"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="AlbumWiki"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <CursorPos X="29" Y="16"/>
-        <UsageCount Value="20"/>
-      </Unit>
-      <Unit>
         <Filename Value="unit_albumwiki.lfm"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="97"/>
+        <CursorPos X="26" Y="122"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit>
+      <Unit>
+        <Filename Value="/usr/lib/lazarus/2.2.6/lcl/interfaces/gtk2/gtk2int.pas"/>
+        <UnitName Value="Gtk2Int"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="40"/>
+        <CursorPos X="49" Y="13"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="27">
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="90" Column="89" TopLine="83"/>
+        <Caret Line="18" Column="39"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="98" Column="76" TopLine="83"/>
+        <Caret Line="78" Column="3" TopLine="50"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="46" Column="3" TopLine="23"/>
+        <Caret Line="33" Column="7" TopLine="12"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="47" Column="3" TopLine="24"/>
+        <Caret Line="171" TopLine="115"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="46" Column="3" TopLine="23"/>
+        <Caret Line="123" Column="35" TopLine="94"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="47" Column="3" TopLine="24"/>
+        <Caret Line="193" TopLine="153"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="46" Column="3" TopLine="23"/>
+        <Caret Line="59" TopLine="54"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="47" Column="3" TopLine="24"/>
+        <Caret Line="179" Column="23" TopLine="155"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="46" Column="3" TopLine="23"/>
+        <Caret Line="68" Column="67" TopLine="68"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="47" Column="3" TopLine="24"/>
+        <Caret Line="172" Column="26" TopLine="162"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="48" Column="3" TopLine="25"/>
+        <Caret Line="209" Column="25"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="47" Column="3" TopLine="24"/>
+        <Caret Line="192" Column="24" TopLine="181"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="46" Column="3" TopLine="23"/>
+        <Caret Line="154" TopLine="154"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="45" Column="3" TopLine="22"/>
+        <Caret Line="34" Column="19"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="44" Column="3" TopLine="21"/>
+        <Caret Line="183" Column="30" TopLine="157"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="42" Column="43" TopLine="29"/>
+        <Caret Line="33" TopLine="33"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="44" Column="3" TopLine="32"/>
+        <Caret Line="215" TopLine="169"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="34" Column="5" TopLine="23"/>
+        <Caret Line="69" TopLine="42"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="5" Column="53"/>
+        <Caret Line="181" Column="26" TopLine="169"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="102" Column="36"/>
+        <Caret Line="186" Column="61" TopLine="169"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="54" TopLine="26"/>
+        <Caret Line="33" Column="77" TopLine="18"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="51" Column="3" TopLine="34"/>
+        <Caret Line="128" Column="84" TopLine="114"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="54" TopLine="31"/>
+        <Caret Line="10" Column="23"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="50" TopLine="31"/>
+        <Caret Line="198" TopLine="166"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="43" Column="46" TopLine="25"/>
+        <Caret Line="67" TopLine="47"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="47" TopLine="27"/>
+        <Caret Line="143" TopLine="123"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="78" Column="53" TopLine="46"/>
+        <Caret Line="176" Column="33" TopLine="165"/>
       </Position>
       <Position>
         <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="65" TopLine="34"/>
-      </Position>
-      <Position>
-        <Filename Value="unit_albumwiki.pas"/>
-        <Caret Line="175" Column="5"/>
-      </Position>
-      <Position>
-        <Filename Value="unit_albumwiki.pas"/>
-        <Caret Column="32"/>
+        <Caret Line="9" Column="30"/>
       </Position>
     </JumpHistory>
     <RunParams>
