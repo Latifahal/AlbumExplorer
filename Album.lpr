@@ -4,14 +4,16 @@ program Album;
 
 uses
   Forms, Interfaces, LCLType, DB, dDatenbank, Uni, ibprovider10, LoginFormUnit,
-  MainFormUnit, AlbumModel, PasswordUtilsUnit;
+  PasswordUtilsUnit, MainFormUnit, AlbumModel;
 
 {$R *.res}
 
 begin
+  //Application.Initialize;
   Application.CreateForm(TdmMain, dmMain);
   Application.CreateForm(TpmAlbum, pmAlbum);
   Application.CreateForm(TLoginForm, LoginForm);
+
 
 
 
@@ -24,5 +26,6 @@ begin
   begin
     Application.Terminate;
   end;
+   //Application.Run;
 end.
 

@@ -1,15 +1,15 @@
 object pmAlbum: TpmAlbum
   Left = 436
-  Height = 670
+  Height = 641
   Top = 31
-  Width = 611
+  Width = 632
   Align = alClient
   Anchors = []
   BorderWidth = 4
   Caption = 'pmAlbum'
-  ClientHeight = 670
-  ClientWidth = 611
-  Font.Color = 12629936
+  ClientHeight = 641
+  ClientWidth = 632
+  Font.Color = clMenuText
   Font.Height = -13
   Font.Name = 'Sans'
   Font.Style = [fsBold]
@@ -56,7 +56,7 @@ object pmAlbum: TpmAlbum
     OnCellClick = dbgAlbumsCellClick
   end
   object edtAlbumSearch: TEdit
-    Left = 303
+    Left = 338
     Height = 30
     Hint = 'Search...'
     Top = 353
@@ -67,10 +67,10 @@ object pmAlbum: TpmAlbum
     OnChange = edtAlbumSearchChange
   end
   object btnClearSearch: TSpeedButton
-    Left = 538
+    Left = 576
     Height = 30
     Top = 353
-    Width = 39
+    Width = 29
     Caption = 'X'
     Font.Color = clMaroon
     Font.Height = -13
@@ -107,7 +107,7 @@ object pmAlbum: TpmAlbum
     ParentFont = False
   end
   object lblSearch: TLabel
-    Left = 305
+    Left = 340
     Height = 18
     Top = 334
     Width = 49
@@ -129,9 +129,40 @@ object pmAlbum: TpmAlbum
     Stretch = True
     OnClick = imgAlbumCoverClick
   end
+  object btnAddNewAlbum: TButton
+    Left = 576
+    Height = 122
+    Hint = 'Add a new album'
+    Top = 392
+    Width = 29
+    Caption = '+'
+    Font.Color = clGreen
+    Font.Height = -16
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 3
+    OnClick = btnAddNewAlbumClick
+  end
+  object btnDeleteAlbum: TButton
+    Left = 576
+    Height = 122
+    Top = 512
+    Width = 29
+    Caption = '-'
+    Font.Color = clMaroon
+    Font.Height = -17
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 4
+    OnClick = btnDeleteAlbumClick
+  end
   object pmAlbum: TPopupMenu
-    Left = 464
-    Top = 16
+    Left = 568
+    Top = 8
     object miEditAlbum: TMenuItem
       Caption = 'miEditAlbum'
       OnClick = miEditAlbumClick
@@ -142,7 +173,7 @@ object pmAlbum: TpmAlbum
     end
   end
   object dlgAlbumCover: TOpenPictureDialog
-    Left = 464
-    Top = 72
+    Left = 568
+    Top = 64
   end
 end

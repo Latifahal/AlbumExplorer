@@ -5,7 +5,7 @@ unit UserObjectUnit;
 interface
 
 uses
-  Classes, SysUtils, IniFiles, DB, Uni, dDatenbank;
+  Classes, SysUtils, IniFiles, DB, Uni, dDatenbank, PasswordUtilsUnit, Dialogs;
 
 const
   C_INI_FILE = 'user.ini';
@@ -104,50 +104,60 @@ end;
 
 { Register user in DB }
 function TUserObject.RegisterUser: Boolean;
+var
+  Salt, Hash: string;
 begin
   Result := False;
   FLastError := '';
   try
-    // --- Check for existing username/email ---
+    // --- Check if username/email exists ---
     FQueryCheckExists.Close;
     FQueryCheckExists.ParamByName('USERNAME').AsString := Trim(FUsername);
     FQueryCheckExists.ParamByName('EMAIL').AsString := Trim(FEmail);
     FQueryCheckExists.Open;
-
     if not FQueryCheckExists.IsEmpty then
     begin
       FLastError := 'Username or email already exists';
       Exit(False);
     end;
-    FQueryCheckExists.Close;
 
-    // --- Insert user and get auto-generated ID ---
+    // --- Generate hash and salt ---
+    Hash := CreatePasswordHash(FPassword, Salt);
+
+    // --- Insert user ---
     FQueryInsert.Close;
     FQueryInsert.SQL.Text :=
-      'INSERT INTO USERS (USERNAME, EMAIL, PWDHASH) ' +
-      'VALUES (:USERNAME, :EMAIL, :PWDHASH) RETURNING ID';
+      'INSERT INTO USERS (USERNAME, EMAIL, PWDHASH, PWDSALT) ' +
+      'VALUES (:USERNAME, :EMAIL, :PWDHASH, :PWDSALT)';
     FQueryInsert.ParamByName('USERNAME').AsString := Trim(FUsername);
     FQueryInsert.ParamByName('EMAIL').AsString := Trim(FEmail);
-    FQueryInsert.ParamByName('PWDHASH').AsString := Trim(FPassword);
-    FQueryInsert.Open; // RETURNING ID fills the dataset
+    FQueryInsert.ParamByName('PWDHASH').AsString := Hash;
+    FQueryInsert.ParamByName('PWDSALT').AsString := Salt;
+    FQueryInsert.ExecSQL;
 
-    FUserID := FQueryInsert.FieldByName('ID').AsInteger; // <-- store new user's DB ID
+    // --- Retrieve the new user's ID safely ---
+    FQueryCheckExists.Close;
+    FQueryCheckExists.SQL.Text := 'SELECT ID FROM USERS WHERE USERNAME = :USERNAME';
+    FQueryCheckExists.ParamByName('USERNAME').AsString := Trim(FUsername);
+    FQueryCheckExists.Open;
+    if not FQueryCheckExists.IsEmpty then
+      FUserID := FQueryCheckExists.FieldByName('ID').AsInteger
+    else
+      FUserID := 0;
 
     dmMain.cDatenbank.Commit;
     Result := True;
   except
     on E: Exception do
-    begin
-      HandleDatabaseError(E);
-      Result := False;
-    end;
+      FLastError := E.Message;
   end;
 end;
+
 
 { Validate credentials }
 function TUserObject.ValidateCredentials(const AUsername, APassword: string): Boolean;
 var
-  StoredHash: string;
+  StoredHash, StoredSalt, ComputedHash: string;
 begin
   Result := False;
   FLastError := '';
@@ -163,11 +173,23 @@ begin
     end;
 
     StoredHash := FQueryLogin.FieldByName('PWDHASH').AsString;
+    StoredSalt := FQueryLogin.FieldByName('PWDSALT').AsString;
 
-    if StoredHash = APassword then
+    // Compute hash for debug
+    ComputedHash := CreatePasswordHash(APassword, StoredSalt);
+
+    // --- Debug message ---
+    ShowMessage('Password: ' + APassword + sLineBreak +
+                'Salt: ' + StoredSalt + sLineBreak +
+                'Computed Hash: ' + ComputedHash + sLineBreak +
+                'Stored Hash: ' + StoredHash);
+
+    // --- Verify password using salted hash ---
+    if UpperCase(ComputedHash) = UpperCase(StoredHash) then
       Result := True
     else
       FLastError := 'Invalid password';
+
   except
     on E: Exception do
     begin
@@ -178,4 +200,3 @@ begin
 end;
 
 end.
-

@@ -5,7 +5,7 @@ unit RegisterFormUnit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, StdCtrls, Dialogs, Uni, UserObjectUnit, dDatenbank;
+  Classes, SysUtils, Forms, Controls, StdCtrls, Dialogs, Uni, UserObjectUnit;
 
 type
   { TRegisterForm }
@@ -68,26 +68,29 @@ end;
 
 { Register button }
 procedure TRegisterForm.btnRegisterClick(Sender: TObject);
+
 begin
   lblRegisterStatus.Caption := '';
   if not ValidateInput then Exit;
 
+  // Set user info
   FUserObj.Username := Trim(edtUsername.Text);
   FUserObj.Email := Trim(edtEmail.Text);
+
   FUserObj.Password := Trim(edtPassword.Text);
 
+  // Attempt registration
   if FUserObj.RegisterUser then
   begin
     lblRegisterStatus.Caption := 'Registration successful.';
-
-    // --- now you can use FUserObj.UserID for album ownership ---
-    // Example: dmMain.qAdressen.ParamByName('USERID').AsInteger := FUserObj.UserID;
-
     ModalResult := mrOK;
   end
   else
     lblRegisterStatus.Caption := 'Database error: ' + FUserObj.LastError;
 end;
+
+
+
 
 { Input validation }
 function TRegisterForm.ValidateInput: Boolean;

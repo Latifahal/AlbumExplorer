@@ -7,13 +7,14 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
   DBGrids, ExtCtrls, StdCtrls, Buttons, Menus, DB,
-  dDatenbank, SongsFormUnit, DBCtrls, Grids, ExtDlgs, Types,
-  AlbumModel;
+  dDatenbank, SongsFormUnit, DBCtrls, ExtDlgs,
+  AlbumModel, DateUtils;
 
 type
   { TpmAlbum }
 
   TpmAlbum = class(TForm)
+    btnDeleteAlbum:         TButton;
     dbgAlbums:              TDBGrid;
     edtAlbumSearch:         TEdit;
     dlgAlbumCover:          TOpenPictureDialog;
@@ -25,6 +26,7 @@ type
     miViewTracks:           TMenuItem;
     btnClearSearch:         TSpeedButton;
     dbMemoAlbumDescription: TDBMemo;
+    btnAddNewAlbum:         TButton;
 
 
     procedure FormCreate(Sender: TObject);
@@ -35,6 +37,8 @@ type
     procedure imgAlbumCoverClick(Sender: TObject);
     procedure miEditAlbumClick(Sender: TObject);
     procedure miViewTracksClick(Sender: TObject);
+    procedure btnAddNewAlbumClick(Sender: TObject);
+    procedure btnDeleteAlbumClick(Sender: TObject);
 
   private
     FAlbumModel: TAlbumModel;
@@ -63,7 +67,8 @@ begin
   dmMain.qAlbum.Open;
 
   FreeAndNil(FAlbumModel);
-  FAlbumModel := TAlbumModel.Create(dmMain.qAlbum);
+  FAlbumModel := TAlbumModel.Create(dmMain.qAlbum, dmMain.qAlbumInsert);
+
 
   if Assigned(dmMain.sqAlbum) then
     dmMain.sqAlbum.OnDataChange := @AlbumDataChange;
@@ -75,13 +80,11 @@ procedure TpmAlbum.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FAlbumModel);
 end;
-
 { -------------------- DATA -------------------- }
 function TpmAlbum.CanEditDataset: Boolean;
 begin
-  Result :=
-    Assigned(FAlbumModel) and
-    FAlbumModel.HasValidDataset;
+  // Allow dataset edits even if empty
+  Result := Assigned(FAlbumModel) and FAlbumModel.HasValidDataset;
 end;
 
 procedure TpmAlbum.AlbumDataChange(Sender: TObject; Field: TField);
@@ -95,7 +98,11 @@ var
 begin
   imgAlbumCover.Picture := nil;
 
-  if not CanEditDataset then Exit;
+  if not CanEditDataset then
+  begin
+    lblDescription.Caption := 'No albums yet';
+    Exit;
+  end;
 
   if FAlbumModel.HasCover then
   begin
@@ -109,7 +116,6 @@ begin
     end;
   end;
 end;
-
 { -------------------- SEARCH (SERVER SIDE) -------------------- }
 procedure TpmAlbum.edtAlbumSearchChange(Sender: TObject);
 var
@@ -129,7 +135,10 @@ begin
   dmMain.qAlbum.Open;
 
   FreeAndNil(FAlbumModel);
-  FAlbumModel := TAlbumModel.Create(dmMain.qAlbum);
+  FAlbumModel := TAlbumModel.Create(
+  dmMain.qAlbum,
+  dmMain.qAlbumInsert
+);
 
   DisplayCurrentRecord;
 end;
@@ -138,18 +147,56 @@ procedure TpmAlbum.btnClearSearchClick(Sender: TObject);
 begin
   edtAlbumSearch.Text := ''; // triggers OnChange
 end;
-
 { -------------------- GRID -------------------- }
 procedure TpmAlbum.dbgAlbumsCellClick(Column: TColumn);
 begin
   DisplayCurrentRecord;
 end;
-
 { -------------------- ALBUM COVER -------------------- }
 procedure TpmAlbum.imgAlbumCoverClick(Sender: TObject);
 begin
   if CanEditDataset then
-    FAlbumModel.LoadCoverFromDialog(imgAlbumCover, dlgAlbumCover);
+   FAlbumModel := TAlbumModel.Create(
+  dmMain.qAlbum,
+  dmMain.qAlbumInsert
+);
+
+end;
+{ -------------------- NEW ALBUM -------------------- }
+procedure TpmAlbum.btnAddNewAlbumClick(Sender: TObject);
+begin
+  if Assigned(FAlbumModel) then
+    FAlbumModel.AddNewAlbum(dmMain.CurrentUserID);
+
+  // display the new record
+  DisplayCurrentRecord;
+end;
+
+{ ------------------ DELETE ALBUM ------------------ }
+procedure TpmAlbum.btnDeleteAlbumClick(Sender: TObject);
+begin
+  if not CanEditDataset then
+  begin
+    ShowMessage('No album selected.');
+    Exit;
+  end;
+
+  if MessageDlg('Delete Album',
+                'Are you sure you want to delete this album?',
+                mtConfirmation, [mbYes, mbNo], 0) <> mrYes then Exit;
+
+  try
+    dmMain.qAlbum.Delete;
+    dmMain.cDatenbank.Commit;
+
+    // Refresh display only, do NOT recreate model incorrectly
+    DisplayCurrentRecord;
+
+    ShowMessage('Album deleted successfully.');
+  except
+    on E: Exception do
+      ShowMessage('Failed to delete album: ' + E.Message);
+  end;
 end;
 
 { -------------------- POPUP -------------------- }
@@ -194,7 +241,5 @@ begin
       ShowMessage('Failed to open tracks: ' + E.Message);
   end;
 end;
-
-
 end.
 

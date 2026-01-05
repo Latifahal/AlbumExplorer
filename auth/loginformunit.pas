@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, StdCtrls, Dialogs,
-  dDatenbank, UserObjectUnit, RegisterFormUnit;
+  dDatenbank, UserObjectUnit, RegisterFormUnit, PasswordUtilsUnit;
 
 type
   { TLoginForm }
@@ -36,60 +36,82 @@ implementation
 
 procedure TLoginForm.btnLoginClick(Sender: TObject);
 var
-  User: TUserObject;
+  StoredHash, StoredSalt: string;
 begin
+  FLoginSuccessful := False;
+  lblLoginStatusMsg.Caption := '';
 
-  // Create user object using the queries from dmMain
-  User := TUserObject.Create(dmMain.qUserCheckExists,
-                             dmMain.qUsersInsert,
-                             dmMain.qUsersLogin);
-  try
-    if User.ValidateCredentials(edtUsername.Text, edtUserPassword.Text) then
-    begin
-      FLoginSuccessful := True;
-      lblLoginStatusMsg.Caption := 'Login successful';
+  // prepare login query
+  dmMain.qUsersLogin.Close;
+  dmMain.qUsersLogin.ParamByName('USERNAME').AsString :=
+    Trim(edtUsername.Text);
+  dmMain.qUsersLogin.Open;
 
-      // Store logged-in user ID
-      dmMain.CurrentUserID := dmMain.qUsersLogin.FieldByName('ID').AsInteger;
-
-      // Open album dataset filtered by user
-      dmMain.qAlbum.Close;
-      dmMain.qAlbum.ParamByName('UID').AsInteger := dmMain.CurrentUserID;
-      dmMain.qAlbum.ParamByName('SEARCH').AsString := '%';
-      dmMain.qAlbum.Open;
-
-      // Open songs dataset
-      if not dmMain.qSongs.Active then
-        dmMain.qSongs.Open;
-
-      // Save settings if "Stay logged in" checked
-      if cbkStayLoggedIn.Checked then
-      begin
-        User.Username := edtUsername.Text;
-        User.StayLoggedIn := True;
-        User.SaveSettings;
-      end;
-
-      Close;
-    end
-    else
-    begin
-      FLoginSuccessful := False;
-      lblLoginStatusMsg.Caption := User.LastError;
-    end;
-  finally
-    User.Free;
+  if dmMain.qUsersLogin.IsEmpty then
+  begin
+    lblLoginStatusMsg.Caption := 'User not found';
+    Exit;
   end;
+
+  StoredHash := dmMain.qUsersLogin.FieldByName('PWDHASH').AsString;
+  StoredSalt := dmMain.qUsersLogin.FieldByName('PWDSALT').AsString;
+
+  // ✅ password verification (as requested)
+  if not VerifyPassword(
+       edtUserPassword.Text,
+       StoredSalt,
+       StoredHash
+     ) then
+  begin
+    lblLoginStatusMsg.Caption := 'Invalid password';
+    Exit;
+  end;
+
+  // login success
+  FLoginSuccessful := True;
+  lblLoginStatusMsg.Caption := 'Login successful';
+
+  // store logged-in user ID
+  dmMain.CurrentUserID :=
+    dmMain.qUsersLogin.FieldByName('ID').AsInteger;
+
+  // open album dataset filtered by user
+  dmMain.qAlbum.Close;
+  dmMain.qAlbum.ParamByName('UID').AsInteger :=
+    dmMain.CurrentUserID;
+  dmMain.qAlbum.ParamByName('SEARCH').AsString := '%';
+  dmMain.qAlbum.Open;
+
+  // open songs dataset
+  if not dmMain.qSongs.Active then
+    dmMain.qSongs.Open;
+
+  // stay logged in
+  if cbkStayLoggedIn.Checked then
+  begin
+    with TUserObject.Create(nil, nil, nil) do
+    try
+      Username := edtUsername.Text;
+      StayLoggedIn := True;
+      SaveSettings;
+    finally
+      Free;
+    end;
+  end;
+
+  Close;
 end;
 
 procedure TLoginForm.btnRegisterClick(Sender: TObject);
 var
   RegForm: TRegisterForm;
 begin
-  RegForm := TRegisterForm.Create(Self,
-                                   dmMain.qUserCheckExists,
-                                   dmMain.qUsersInsert,
-                                   dmMain.qUsersLogin);
+  RegForm := TRegisterForm.Create(
+               Self,
+               dmMain.qUserCheckExists,
+               dmMain.qUsersInsert,
+               dmMain.qUsersLogin
+             );
   try
     if RegForm.ShowModal = mrOK then
       edtUsername.Text := RegForm.NewUsername;

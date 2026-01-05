@@ -20,11 +20,13 @@ object dmMain: TdmMain
       'SELECT ID, ALBUM, ARTIST, RELEASEYEAR, DESCRIPTION, USERID, ALBUMCOVER'
       'FROM Album'
       'WHERE USERID = :UID'
-      ' AND UPPER(ALBUM)  LIKE UPPER(:SEARCH)'
-      ' OR UPPER(ARTIST) LIKE UPPER(:SEARCH)'
+      '  AND ('
+      '        UPPER(ALBUM)  LIKE UPPER(:SEARCH)'
+      '     OR UPPER(ARTIST) LIKE UPPER(:SEARCH)'
+      '      )'
     )
     FilterOptions = []
-    Left = 104
+    Left = 105
     Top = 88
     ParamData = <    
       item
@@ -77,7 +79,8 @@ object dmMain: TdmMain
   object qUsersLogin: TUniQuery
     Connection = cDatenbank
     SQL.Strings = (
-      'SELECT ID, PWDHASH FROM USERS'
+      'SELECT ID, PWDHASH, PWDSALT'
+      'FROM USERS'
       'WHERE TRIM(USERNAME) = TRIM(:USERNAME)'
       ''
     )
@@ -120,8 +123,8 @@ object dmMain: TdmMain
   object qUsersInsert: TUniQuery
     Connection = cDatenbank
     SQL.Strings = (
-      'INSERT INTO USERS (USERNAME, EMAIL, PWDHASH)'
-      'VALUES (:USERNAME, :EMAIL, :PWDHASH)'
+      'INSERT INTO USERS (USERNAME, EMAIL, PWDHASH, PWDSALT)'
+      'VALUES (:USERNAME, :EMAIL, :PWDHASH, :PWDSALT)'
     )
     FilterOptions = []
     Left = 105
@@ -141,6 +144,10 @@ object dmMain: TdmMain
         DataType = ftString
         Name = 'PWDHASH'
         ParamType = ptInput
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'PWDSALT'
       end>
   end
   object qUserCheckExists: TUniQuery
@@ -164,6 +171,55 @@ object dmMain: TdmMain
         DataType = ftString
         Name = 'EMAIL'
         ParamType = ptInput
+      end>
+  end
+  object qAlbumInsert: TUniQuery
+    Connection = cDatenbank
+    SQL.Strings = (
+      'INSERT INTO Album (ALBUM, ARTIST, RELEASEYEAR, DESCRIPTION, USERID, ALBUMCOVER)'
+      'VALUES (:ALBUM, :ARTIST, :RELEASEYEAR, :DESCRIPTION, :USERID, :ALBUMCOVER)'
+    )
+    FilterOptions = []
+    Left = 195
+    Top = 384
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'ALBUM'
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'ARTIST'
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'RELEASEYEAR'
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'DESCRIPTION'
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'USERID'
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'ALBUMCOVER'
+      end>
+  end
+  object qAlbumDelete: TUniQuery
+    Connection = cDatenbank
+    SQL.Strings = (
+      'DELETE FROM Album WHERE ID = :ID'
+    )
+    FilterOptions = []
+    Left = 290
+    Top = 384
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'ID'
       end>
   end
 end
