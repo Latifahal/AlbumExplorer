@@ -53,7 +53,6 @@ object pmAlbum: TpmAlbum
     PopupMenu = pmAlbum
     Scrollbars = ssVertical
     TabOrder = 0
-    OnCellClick = dbgAlbumsCellClick
   end
   object edtAlbumSearch: TEdit
     Left = 338
@@ -122,10 +121,13 @@ object pmAlbum: TpmAlbum
     Cursor = crHandPoint
     Left = 25
     Height = 240
+    Hint = 'Click to add or change album cover'
     Top = 8
     Width = 248
     Center = True
+    ParentShowHint = False
     Proportional = True
+    ShowHint = True
     Stretch = True
     OnClick = imgAlbumCoverClick
   end
@@ -146,22 +148,8 @@ object pmAlbum: TpmAlbum
     TabOrder = 3
     OnClick = btnAddNewAlbumClick
   end
-  object btnDeleteAlbum: TButton
-    Left = 576
-    Height = 122
-    Top = 512
-    Width = 29
-    Caption = '-'
-    Font.Color = clMaroon
-    Font.Height = -17
-    Font.Name = 'Sans'
-    Font.Style = [fsBold]
-    ParentFont = False
-    TabOrder = 4
-    OnClick = btnDeleteAlbumClick
-  end
   object pmAlbum: TPopupMenu
-    Left = 568
+    Left = 512
     Top = 8
     object miEditAlbum: TMenuItem
       Caption = 'miEditAlbum'
@@ -173,7 +161,7 @@ object pmAlbum: TpmAlbum
     end
   end
   object dlgAlbumCover: TOpenPictureDialog
-    Left = 568
+    Left = 512
     Top = 64
   end
 end

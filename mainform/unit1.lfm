@@ -1,0 +1,21 @@
+object Form1: TForm1
+  Left = 555
+  Height = 485
+  Top = 31
+  Width = 619
+  Caption = 'Form1'
+  ClientHeight = 485
+  ClientWidth = 619
+  OnCreate = FormCreate
+  object imgAlbumCover: TImage
+    Cursor = crHandPoint
+    Left = 272
+    Height = 176
+    Top = 160
+    Width = 210
+  end
+  object dlgAlbumCover: TOpenPictureDialog
+    Left = 136
+    Top = 72
+  end
+end

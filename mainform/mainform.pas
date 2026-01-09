@@ -14,7 +14,6 @@ type
   { TpmAlbum }
 
   TpmAlbum = class(TForm)
-    btnDeleteAlbum:         TButton;
     dbgAlbums:              TDBGrid;
     edtAlbumSearch:         TEdit;
     dlgAlbumCover:          TOpenPictureDialog;
@@ -29,16 +28,16 @@ type
     btnAddNewAlbum:         TButton;
 
 
+
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure edtAlbumSearchChange(Sender: TObject);
     procedure btnClearSearchClick(Sender: TObject);
-    procedure dbgAlbumsCellClick(Column: TColumn);
     procedure imgAlbumCoverClick(Sender: TObject);
     procedure miEditAlbumClick(Sender: TObject);
     procedure miViewTracksClick(Sender: TObject);
     procedure btnAddNewAlbumClick(Sender: TObject);
-    procedure btnDeleteAlbumClick(Sender: TObject);
+
 
   private
     FAlbumModel: TAlbumModel;
@@ -54,69 +53,81 @@ implementation
 
 {$R *.lfm}
 
-{ -------------------- INIT -------------------- }
+
+
 procedure TpmAlbum.FormCreate(Sender: TObject);
 begin
   dmMain.cDatenbank.Connected := True;
 
-  pmAlbum.PopupComponent := dbgAlbums;
+  dmMain.sqAlbum.OnDataChange := @AlbumDataChange;
 
-  dmMain.qAlbum.Close;
   dmMain.qAlbum.ParamByName('UID').AsInteger := dmMain.CurrentUserID;
   dmMain.qAlbum.ParamByName('SEARCH').AsString := '%%';
   dmMain.qAlbum.Open;
 
-  FreeAndNil(FAlbumModel);
   FAlbumModel := TAlbumModel.Create(dmMain.qAlbum, dmMain.qAlbumInsert);
-
-
-  if Assigned(dmMain.sqAlbum) then
-    dmMain.sqAlbum.OnDataChange := @AlbumDataChange;
-
-  DisplayCurrentRecord;
 end;
+
 
 procedure TpmAlbum.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FAlbumModel);
 end;
-{ -------------------- DATA -------------------- }
+
+
 function TpmAlbum.CanEditDataset: Boolean;
 begin
-  // Allow dataset edits even if empty
-  Result := Assigned(FAlbumModel) and FAlbumModel.HasValidDataset;
+  Result :=
+    Assigned(FAlbumModel) and
+    Assigned(dmMain.qAlbum) and
+    dmMain.qAlbum.Active and
+    not dmMain.qAlbum.IsEmpty;
 end;
+
 
 procedure TpmAlbum.AlbumDataChange(Sender: TObject; Field: TField);
 begin
   DisplayCurrentRecord;
 end;
 
+
 procedure TpmAlbum.DisplayCurrentRecord;
 var
-  BlobStream: TStream;
+  BlobField: TBlobField;
+  MemStream: TMemoryStream;
 begin
-  imgAlbumCover.Picture := nil;
+  imgAlbumCover.Picture.Clear;  // clear previous image
 
-  if not CanEditDataset then
-  begin
-    lblDescription.Caption := 'No albums yet';
-    Exit;
-  end;
+  if not CanEditDataset then Exit;
 
-  if FAlbumModel.HasCover then
+  BlobField := dmMain.qAlbum.FieldByName('ALBUMCOVER') as TBlobField;
+
+  if Assigned(BlobField) and (not BlobField.IsNull) and (BlobField.BlobSize > 0) then
   begin
-    BlobStream := FAlbumModel.CreateCoverStream;
-    if Assigned(BlobStream) then
+    MemStream := TMemoryStream.Create;
     try
-      if BlobStream.Size > 0 then
-        imgAlbumCover.Picture.LoadFromStream(BlobStream);
+      BlobField.SaveToStream(MemStream);  // copy blob to memory
+      MemStream.Position := 0;             // must reset to start
+
+      try
+        imgAlbumCover.Picture.LoadFromStream(MemStream); // safe load
+      except
+        on E: Exception do
+        begin
+          imgAlbumCover.Picture.Clear;                 // prevent crash
+          ShowMessage('Failed to load album cover: ' + E.Message);
+        end;
+      end;
+
     finally
-      BlobStream.Free;
+      MemStream.Free;
     end;
   end;
 end;
-{ -------------------- SEARCH (SERVER SIDE) -------------------- }
+
+
+
+
 procedure TpmAlbum.edtAlbumSearchChange(Sender: TObject);
 var
   S: string;
@@ -134,12 +145,6 @@ begin
 
   dmMain.qAlbum.Open;
 
-  FreeAndNil(FAlbumModel);
-  FAlbumModel := TAlbumModel.Create(
-  dmMain.qAlbum,
-  dmMain.qAlbumInsert
-);
-
   DisplayCurrentRecord;
 end;
 
@@ -147,99 +152,51 @@ procedure TpmAlbum.btnClearSearchClick(Sender: TObject);
 begin
   edtAlbumSearch.Text := ''; // triggers OnChange
 end;
-{ -------------------- GRID -------------------- }
-procedure TpmAlbum.dbgAlbumsCellClick(Column: TColumn);
-begin
-  DisplayCurrentRecord;
-end;
-{ -------------------- ALBUM COVER -------------------- }
+
+
+
 procedure TpmAlbum.imgAlbumCoverClick(Sender: TObject);
 begin
   if CanEditDataset then
-   FAlbumModel := TAlbumModel.Create(
-  dmMain.qAlbum,
-  dmMain.qAlbumInsert
-);
-
+  begin
+    if Assigned(dlgAlbumCover) and dlgAlbumCover.Execute then
+    begin
+      FAlbumModel.SaveCoverFromFile(dlgAlbumCover); // save to DB
+      DisplayCurrentRecord;                        // reload safely
+    end;
+  end;
 end;
-{ -------------------- NEW ALBUM -------------------- }
+
+
+
 procedure TpmAlbum.btnAddNewAlbumClick(Sender: TObject);
 begin
   if Assigned(FAlbumModel) then
     FAlbumModel.AddNewAlbum(dmMain.CurrentUserID);
-
-  // display the new record
-  DisplayCurrentRecord;
 end;
 
-{ ------------------ DELETE ALBUM ------------------ }
-procedure TpmAlbum.btnDeleteAlbumClick(Sender: TObject);
-begin
-  if not CanEditDataset then
-  begin
-    ShowMessage('No album selected.');
-    Exit;
-  end;
 
-  if MessageDlg('Delete Album',
-                'Are you sure you want to delete this album?',
-                mtConfirmation, [mbYes, mbNo], 0) <> mrYes then Exit;
-
-  try
-    dmMain.qAlbum.Delete;
-    dmMain.cDatenbank.Commit;
-
-    // Refresh display only, do NOT recreate model incorrectly
-    DisplayCurrentRecord;
-
-    ShowMessage('Album deleted successfully.');
-  except
-    on E: Exception do
-      ShowMessage('Failed to delete album: ' + E.Message);
-  end;
-end;
-
-{ -------------------- POPUP -------------------- }
 procedure TpmAlbum.miEditAlbumClick(Sender: TObject);
 begin
-  if not CanEditDataset then
-  begin
-    ShowMessage('No album selected.');
-    Exit;
-  end;
-
-  if not dmMain.qAlbum.CanModify then
-  begin
-    ShowMessage('Dataset is not editable.');
-    Exit;
-  end;
-
-  dmMain.qAlbum.Edit;
+  if CanEditDataset and dmMain.qAlbum.CanModify then
+    dmMain.qAlbum.Edit;
 end;
+
 
 procedure TpmAlbum.miViewTracksClick(Sender: TObject);
 var
   AlbumID: Integer;
 begin
-  if not CanEditDataset then
-  begin
-    ShowMessage('No album selected.');
-    Exit;
-  end;
+  if not CanEditDataset then Exit;
 
   AlbumID := dmMain.qAlbum.FieldByName('ID').AsInteger;
 
   if not Assigned(Tracks) then
     Tracks := TTracks.Create(Application);
 
-  // Ensure that Tracks is fully initialized before calling method
-  try
-    Tracks.LoadSongsFromAlbum(AlbumID);
-    Tracks.Show;
-  except
-    on E: Exception do
-      ShowMessage('Failed to open tracks: ' + E.Message);
-  end;
+  Tracks.LoadSongsFromAlbum(AlbumID);
+  Tracks.Show;
 end;
+
 end.
 

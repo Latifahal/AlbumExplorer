@@ -222,4 +222,18 @@ object dmMain: TdmMain
         Name = 'ID'
       end>
   end
+  object qUnit1: TUniQuery
+    Connection = cDatenbank
+    SQL.Strings = (
+      'SELECT ID, ALBUM_NAME, COLUMN1 FROM BLOBTEST'
+    )
+    FilterOptions = []
+    Left = 102
+    Top = 685
+  end
+  object sqUnit1: TUniDataSource
+    DataSet = qUnit1
+    Left = 168
+    Top = 685
+  end
 end

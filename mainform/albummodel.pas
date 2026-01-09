@@ -11,20 +11,17 @@ type
   { TAlbumModel manages album data, including album cover BLOBs }
   TAlbumModel = class
   private
-    FDataSet: TDataSet;       // the main album dataset (qAlbum)
-    FInsertQuery: TUniQuery;  // dedicated insert query (qAlbumInsert)
+    FDataSet:     TDataSet;   // Main dataset (qAlbum)
+    FInsertQuery: TUniQuery;  // Dedicated insert query (qAlbumInsert)
   public
     constructor Create(ADataSet: TDataSet; AInsertQuery: TUniQuery);
 
     function HasValidDataset: Boolean;
-
     function HasCover: Boolean;
     function CreateCoverStream: TStream;
-
-    procedure LoadCoverFromDialog(TargetImage: TImage; Dialog: TOpenDialog);
-
-    { -------------------- NEW ALBUM -------------------- }
+    function LoadCoverFromDialog(Dialog: TOpenDialog): Boolean;
     procedure AddNewAlbum(UserID: Integer);
+    procedure SaveCoverFromFile(Dialog: TOpenDialog);
   end;
 
 implementation
@@ -41,7 +38,8 @@ function TAlbumModel.HasValidDataset: Boolean;
 begin
   Result :=
     Assigned(FDataSet) and
-    FDataSet.Active;
+    FDataSet.Active and
+    not FDataSet.IsEmpty;
 end;
 
 {-------------------- COVER CHECK -------------------}
@@ -71,27 +69,48 @@ begin
 end;
 
 {-------------------- LOAD COVER FROM DIALOG --------------------}
-procedure TAlbumModel.LoadCoverFromDialog(TargetImage: TImage; Dialog: TOpenDialog);
+function TAlbumModel.LoadCoverFromDialog(Dialog: TOpenDialog): Boolean;
 var
   Field: TField;
 begin
+  Result := False;
+
   if not HasValidDataset then Exit;
-  if not Assigned(TargetImage) or not Assigned(Dialog) then Exit;
+  if not Assigned(Dialog) then Exit;
   if not Dialog.Execute then Exit;
 
   Field := FDataSet.FindField('ALBUMCOVER');
   if not (Field is TBlobField) then Exit;
 
-  FDataSet.Edit;
+  if not (FDataSet.State in dsEditModes) then
+    FDataSet.Edit;
+
   try
     TBlobField(Field).LoadFromFile(Dialog.FileName);
     FDataSet.Post;
+    Result := True;
   except
     FDataSet.Cancel;
     raise;
   end;
+end;
+{-------------------- Save Cover From File --------------------}
+procedure TAlbumModel.SaveCoverFromFile(Dialog: TOpenDialog);
+var
+  Field: TBlobField;
+begin
+  if not HasValidDataset then Exit;       // no album selected
+  if not Assigned(Dialog) then Exit;      // no dialog
+  if not Dialog.Execute then Exit;        // user canceled
 
-  TargetImage.Picture.LoadFromFile(Dialog.FileName);
+  Field := FDataSet.FindField('ALBUMCOVER') as TBlobField;
+  if not Assigned(Field) then Exit;
+
+  if not (FDataSet.State in dsEditModes) then
+    FDataSet.Edit;
+
+  Field.LoadFromFile(Dialog.FileName);  // save file to database
+  FDataSet.Post;
 end;
 
 { -------------------- ADD NEW ALBUM -------------------- }
@@ -99,7 +118,6 @@ procedure TAlbumModel.AddNewAlbum(UserID: Integer);
 begin
   if not Assigned(FInsertQuery) then Exit;
   if not Assigned(FDataSet) then Exit;
-
 
   FInsertQuery.Close;
 
@@ -112,10 +130,9 @@ begin
 
   FInsertQuery.ExecSQL;
 
-  // Refresh the main dataset to see the new row in the grid
+  // Refresh the main dataset to include the new row
   FDataSet.Close;
   FDataSet.Open;
 end;
-
 end.
 

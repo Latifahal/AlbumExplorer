@@ -5,7 +5,7 @@ unit dDatenbank;
 interface
 
 uses
-  Classes, SysUtils, Uni, InterBaseUniProvider;
+  Classes, SysUtils, Uni, InterBaseUniProvider, DB;
 
 type
 
@@ -32,7 +32,9 @@ type
     qUserCheckExists:      TUniQuery;
     qAlbumInsert:          TUniQuery;
 
-
+    {q and sq for testing}
+    sqUnit1:               TUniDataSource;
+    qUnit1:                TUniQuery;
 
 
 
@@ -51,6 +53,8 @@ implementation
 {$R *.lfm}
 
 { TdmMain }
+
+
 
 end.
 

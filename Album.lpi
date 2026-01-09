@@ -108,6 +108,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="PasswordUtilsUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="mainform/unit1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
