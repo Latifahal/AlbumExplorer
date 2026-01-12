@@ -5,7 +5,6 @@ object dmMain: TdmMain
   VerticalOffset = 0
   Width = 643
   object cDatenbank: TUniConnection
-    Connected = True
     ProviderName = 'InterBase'
     Database = '/database/livia.fdb'
     Username = 'sysdba'
@@ -225,7 +224,8 @@ object dmMain: TdmMain
   object qUnit1: TUniQuery
     Connection = cDatenbank
     SQL.Strings = (
-      'SELECT ID, ALBUM_NAME, COLUMN1 FROM BLOBTEST'
+      'SELECT * FROM BLOBTEST'
+      ''
     )
     FilterOptions = []
     Left = 102

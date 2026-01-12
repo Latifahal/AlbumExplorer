@@ -157,7 +157,6 @@ object pmAlbum: TpmAlbum
     end
     object miViewTracks: TMenuItem
       Caption = 'miViewTracks'
-      OnClick = miViewTracksClick
     end
   end
   object dlgAlbumCover: TOpenPictureDialog

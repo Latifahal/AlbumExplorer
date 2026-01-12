@@ -6,22 +6,23 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
-  ExtCtrls, ExtDlgs, StdCtrls, DB,
-  dDatenbank, LResources;
+  ExtCtrls, ExtDlgs, StdCtrls, DB, Uni;
 
 type
+  { TForm1 }
   TForm1 = class(TForm)
-    imgBlob: TImage;
-    dlgPicture: TOpenPictureDialog;
     btnDeleteImage: TButton;
-    procedure FormCreate(Sender: TObject);
-    procedure imgBlobClick(Sender: TObject);
+    imgAlbumCover: TImage;
+    dlgAlbumCover: TOpenPictureDialog;
     procedure btnDeleteImageClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure imgAlbumCoverClick(Sender: TObject);
   private
-    procedure LoadBlob;
-    procedure SaveBlob(const FileName: string);
-    procedure LoadPlaceholder;
-    procedure UpdateDeleteButton;
+    sqUnit1: TUniDataSource;
+    qUnit1: TUniQuery;
+    procedure ClearBlob;
+    procedure LoadCurrentCover;
+    procedure SaveCoverToDB(const FileName: string);
   end;
 
 var
@@ -29,108 +30,116 @@ var
 
 implementation
 
-{$R *.lfm}
-{$R images.lrs}
+uses dDatenbank;
 
+{$R *.lfm}
+
+{ ---------------------- Form Create ---------------------- }
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  // Connect to database
   if not dmMain.cDatenbank.Connected then
     dmMain.cDatenbank.Connected := True;
 
-  dmMain.qBlobTest.Open;
-
-  LoadBlob;
-  UpdateDeleteButton;
-end;
-
-procedure TForm1.LoadPlaceholder;
-begin
-  imgBlob.Picture.Clear;
-  imgBlob.Picture.LoadFromLazarusResource('ROBOT_PLACEHOLDER');
-end;
-
-procedure TForm1.LoadBlob;
-var
-  Blob: TBlobField;
-  S: TMemoryStream;
-begin
-  if dmMain.qBlobTest.IsEmpty then
+  // Create query and datasource if not using designer
+  if not Assigned(qUnit1) then
   begin
-    LoadPlaceholder;
-    Exit;
+    qUnit1 := TUniQuery.Create(Self);
+    qUnit1.Connection := dmMain.cDatenbank;
+
+    sqUnit1 := TUniDataSource.Create(Self);
+    sqUnit1.DataSet := qUnit1;
   end;
 
-  Blob := dmMain.qBlobTest.FieldByName('COLUMN1') as TBlobField;
+  // Open query safely
+  qUnit1.Close;
+  qUnit1.SQL.Text := 'SELECT * FROM BLOBTEST';
+  qUnit1.Open;
 
-  if Blob.IsNull or (Blob.BlobSize = 0) then
-  begin
-    LoadPlaceholder;
-    Exit;
-  end;
-
-  S := TMemoryStream.Create;
-  try
-    Blob.SaveToStream(S);
-    S.Position := 0;
-    imgBlob.Picture.LoadFromStream(S);
-  finally
-    S.Free;
-  end;
-end;
-
-procedure TForm1.SaveBlob(const FileName: string);
-var
-  Blob: TBlobField;
-begin
-  if dmMain.qBlobTest.IsEmpty then
-    dmMain.qBlobTest.Append
-  else
-    dmMain.qBlobTest.Edit;
-
-  Blob := dmMain.qBlobTest.FieldByName('COLUMN1') as TBlobField;
-  Blob.LoadFromFile(FileName);
-
-  dmMain.qBlobTest.Post;
-
-  LoadBlob;
-  UpdateDeleteButton;
+  // Load cover if exists
+  LoadCurrentCover;
 end;
 
 procedure TForm1.btnDeleteImageClick(Sender: TObject);
+begin
+  ClearBlob;
+end;
+
+procedure TForm1.ClearBlob;
 var
   Blob: TBlobField;
 begin
-  if dmMain.qBlobTest.IsEmpty then Exit;
+  if qUnit1.IsEmpty then Exit;
 
-  dmMain.qBlobTest.Edit;
+  qUnit1.Edit;
 
-  Blob := dmMain.qBlobTest.FieldByName('COLUMN1') as TBlobField;
+  Blob := qUnit1.FieldByName('COLUMN1') as TBlobField;
   Blob.Clear;
 
-  dmMain.qBlobTest.Post;
+  qUnit1.Post;
 
-  LoadPlaceholder;
-  UpdateDeleteButton;
+  imgAlbumCover.Picture.Clear; // clears UI
 end;
 
-procedure TForm1.imgBlobClick(Sender: TObject);
-begin
-  if dlgPicture.Execute then
-    SaveBlob(dlgPicture.FileName);
-end;
-
-procedure TForm1.UpdateDeleteButton;
+{ ---------------------- Load Cover ---------------------- }
+procedure TForm1.LoadCurrentCover;
 var
-  Blob: TBlobField;
+  BlobField: TBlobField;
+  MemStream: TMemoryStream;
 begin
-  if dmMain.qBlobTest.IsEmpty then
-  begin
-    btnDeleteImage.Enabled := False;
-    Exit;
-  end;
+  imgAlbumCover.Picture.Clear;
 
-  Blob := dmMain.qBlobTest.FieldByName('COLUMN1') as TBlobField;
-  btnDeleteImage.Enabled := not Blob.IsNull;
+  if not Assigned(qUnit1) then Exit;
+  if not qUnit1.Active then Exit;
+  if qUnit1.IsEmpty then Exit;
+
+  BlobField := qUnit1.FieldByName('COLUMN1') as TBlobField;
+
+  if Assigned(BlobField) and (not BlobField.IsNull) and (BlobField.BlobSize > 0) then
+  begin
+    MemStream := TMemoryStream.Create;
+    try
+      BlobField.SaveToStream(MemStream);
+      MemStream.Position := 0;
+      try
+        imgAlbumCover.Picture.LoadFromStream(MemStream);
+      except
+        on E: Exception do
+          ShowMessage('Failed to load image: ' + E.Message);
+      end;
+    finally
+      MemStream.Free;
+    end;
+  end;
+end;
+
+{ ---------------------- Save Cover ---------------------- }
+procedure TForm1.SaveCoverToDB(const FileName: string);
+var
+  BlobField: TBlobField;
+begin
+  if not Assigned(qUnit1) then Exit;
+  if not qUnit1.Active then Exit;
+  if qUnit1.IsEmpty then Exit;
+
+  BlobField := qUnit1.FieldByName('COLUMN1') as TBlobField;
+  if not Assigned(BlobField) then Exit;
+
+  if not (qUnit1.State in dsEditModes) then
+    qUnit1.Edit;
+
+  BlobField.LoadFromFile(FileName);
+  qUnit1.Post;
+
+  // Reload image
+  LoadCurrentCover;
+end;
+
+{ ---------------------- Image Click ---------------------- }
+procedure TForm1.imgAlbumCoverClick(Sender: TObject);
+begin
+  if dlgAlbumCover.Execute then
+    SaveCoverToDB(dlgAlbumCover.FileName);
 end;
 
 end.

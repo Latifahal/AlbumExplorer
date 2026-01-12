@@ -11,7 +11,7 @@ type
   { TAlbumModel manages album data, including album cover BLOBs }
   TAlbumModel = class
   private
-    FDataSet:     TDataSet;   // Main dataset (qAlbum)
+    FDataSet:     TDataSet;
     FInsertQuery: TUniQuery;  // Dedicated insert query (qAlbumInsert)
   public
     constructor Create(ADataSet: TDataSet; AInsertQuery: TUniQuery);
@@ -77,14 +77,13 @@ begin
 
   if not HasValidDataset then Exit;
   if not Assigned(Dialog) then Exit;
+
   if not Dialog.Execute then Exit;
 
   Field := FDataSet.FindField('ALBUMCOVER');
   if not (Field is TBlobField) then Exit;
 
-  if not (FDataSet.State in dsEditModes) then
-    FDataSet.Edit;
-
+  FDataSet.Edit;
   try
     TBlobField(Field).LoadFromFile(Dialog.FileName);
     FDataSet.Post;
@@ -94,24 +93,31 @@ begin
     raise;
   end;
 end;
+
 {-------------------- Save Cover From File --------------------}
 procedure TAlbumModel.SaveCoverFromFile(Dialog: TOpenDialog);
 var
   Field: TBlobField;
 begin
-  if not HasValidDataset then Exit;       // no album selected
-  if not Assigned(Dialog) then Exit;      // no dialog
-  if not Dialog.Execute then Exit;        // user canceled
+  if not HasValidDataset then Exit;
+  if not Assigned(Dialog) then Exit;
+  if not Dialog.Execute then Exit;
 
-  Field := FDataSet.FindField('ALBUMCOVER') as TBlobField;
+  Field := FDataSet.FieldByName('ALBUMCOVER') as TBlobField;
   if not Assigned(Field) then Exit;
 
   if not (FDataSet.State in dsEditModes) then
     FDataSet.Edit;
 
-  Field.LoadFromFile(Dialog.FileName);  // save file to database
-  FDataSet.Post;
+  try
+    Field.LoadFromFile(Dialog.FileName);
+    FDataSet.Post;
+  except
+    FDataSet.Cancel;
+    raise;
+  end;
 end;
+
 
 { -------------------- ADD NEW ALBUM -------------------- }
 procedure TAlbumModel.AddNewAlbum(UserID: Integer);

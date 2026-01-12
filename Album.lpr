@@ -9,25 +9,25 @@ uses
 {$R *.res}
 
 begin
-  Application.Initialize;
+  //Application.Initialize;
   Application.CreateForm(TdmMain, dmMain);
-  //Application.CreateForm(TpmAlbum, pmAlbum);
-  //Application.CreateForm(TLoginForm, LoginForm);
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TpmAlbum, pmAlbum);
+  Application.CreateForm(TLoginForm, LoginForm);
+  //Application.CreateForm(TForm1, Form1);
 
 
 
 
-  //if LoginForm.Execute then
-  //begin
-  //  LoginForm.Destroy;
-  //  Application.CreateForm(TForm1, Form1);
-  //  Application.Run;
-  //end
-  //else
-  //begin
-  //  Application.Terminate;
-  //end;
-   Application.Run;
+  if LoginForm.Execute then
+  begin
+    LoginForm.Destroy;
+    Application.CreateForm(TForm1, Form1);
+    Application.Run;
+  end
+  else
+  begin
+    Application.Terminate;
+  end;
+   //Application.Run;
 end.
 

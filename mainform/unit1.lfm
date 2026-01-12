@@ -9,13 +9,23 @@ object Form1: TForm1
   OnCreate = FormCreate
   object imgAlbumCover: TImage
     Cursor = crHandPoint
-    Left = 272
-    Height = 176
-    Top = 160
-    Width = 210
+    Left = 128
+    Height = 288
+    Top = 24
+    Width = 368
+    OnClick = imgAlbumCoverClick
+  end
+  object btnDeleteImage: TButton
+    Left = 248
+    Height = 25
+    Top = 384
+    Width = 75
+    Caption = 'Delete'
+    TabOrder = 0
+    OnClick = btnDeleteImageClick
   end
   object dlgAlbumCover: TOpenPictureDialog
-    Left = 136
-    Top = 72
+    Left = 24
+    Top = 16
   end
 end
