@@ -7,18 +7,19 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
   DBGrids, ExtCtrls, StdCtrls, Buttons, Menus, DB,
-  ExtDlgs, Uni, AlbumModel, DateUtils, DBCtrls;
+  ExtDlgs, Uni, AlbumModel, DateUtils, DBCtrls, SongsFormUnit, dDatenbank, LCLType;
 
 type
   { TpmAlbum }
 
   TpmAlbum = class(TForm)
+    btnDeleteAlbum:         TButton;
     dbgAlbums:              TDBGrid;
     edtAlbumSearch:         TEdit;
-    dlgAlbumCover:          TOpenPictureDialog;
     imgAlbumCover:          TImage;
     lblDescription:         TLabel;
     lblSearch:              TLabel;
+    dlgAlbumCover:          TOpenPictureDialog;
     pmAlbum:                TPopupMenu;
     miEditAlbum:            TMenuItem;
     miViewTracks:           TMenuItem;
@@ -26,14 +27,15 @@ type
     dbMemoAlbumDescription: TDBMemo;
     btnAddNewAlbum:         TButton;
 
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure edtAlbumSearchChange(Sender: TObject);
-    procedure btnClearSearchClick(Sender: TObject);
-    procedure imgAlbumCoverClick(Sender: TObject);
-    procedure miEditAlbumClick(Sender: TObject);
-    procedure miViewTracksClick(Sender: TObject);
-    procedure btnAddNewAlbumClick(Sender: TObject);
+    procedure btnDeleteAlbumClick(Sender: TObject);
+    procedure FormCreate            (Sender: TObject);
+    procedure FormDestroy           (Sender: TObject);
+    procedure edtAlbumSearchChange  (Sender: TObject);
+    procedure btnClearSearchClick   (Sender: TObject);
+    procedure imgAlbumCoverClick    (Sender: TObject);
+    procedure miEditAlbumClick      (Sender: TObject);
+    procedure miViewTracksClick     (Sender: TObject);
+    procedure btnAddNewAlbumClick   (Sender: TObject);
 
   private
     FAlbumModel: TAlbumModel;
@@ -48,9 +50,33 @@ var
 
 implementation
 
-uses dDatenbank;
 
 {$R *.lfm}
+function AskConfirmation(const Msg: string = 'Are you sure you want to proceed?'): Boolean;
+begin
+  Result := QuestionDlg('Confirmation', Msg, mtConfirmation, [mrYes, mrNo], 0) = mrYes;
+end;
+
+procedure TpmAlbum.btnDeleteAlbumClick(Sender: TObject);
+begin
+  // Exit early if model or dataset not ready
+  if not Assigned(FAlbumModel) then Exit;
+  if not dmMain.qAlbum.Active then Exit;
+  if dmMain.qAlbum.IsEmpty then Exit;
+
+  // Ask the user for confirmation
+  if not AskConfirmation('Are you sure you want to delete this album?') then
+    Exit; // User chose No, exit procedure
+
+  // Proceed with deletion
+  dmMain.qAlbumDelete.ParamByName('ID').AsInteger :=
+    dmMain.qAlbum.FieldByName('ID').AsInteger;
+
+  dmMain.qAlbumDelete.Execute;
+
+  dmMain.qAlbum.Refresh;
+end;
+
 
 { ---------------------- FORM CREATE ---------------------- }
 procedure TpmAlbum.FormCreate(Sender: TObject);
@@ -161,63 +187,76 @@ var
 begin
   Writeln('imgAlbumCoverClick: start');
 
-  // Ensure dataset is assigned and open
+  Writeln('Before checking qAlbum assignment');
   if not Assigned(dmMain.qAlbum) then Exit;
+  Writeln('After checking qAlbum assignment: qAlbum assigned');
+
+  Writeln('Before checking if qAlbum is active');
   if not dmMain.qAlbum.Active then
   begin
-    Writeln('imgAlbumCoverClick: opening dataset');
+    Writeln('qAlbum not active, opening');
     dmMain.qAlbum.Open;
-  end;
+  end
+  else
+    Writeln('qAlbum already active');
 
-  if dmMain.qAlbum.IsEmpty then
-  begin
-    Writeln('imgAlbumCoverClick: dataset is empty');
-    Exit;
-  end;
+  Writeln('Before checking if qAlbum is empty');
+  if dmMain.qAlbum.IsEmpty then Exit;
+  Writeln('qAlbum has records');
 
-  // Get the BLOB field safely
+  Writeln('Before getting ALBUMCOVER field');
   BlobField := dmMain.qAlbum.FieldByName('ALBUMCOVER') as TBlobField;
-  if not Assigned(BlobField) then
-  begin
-    Writeln('imgAlbumCoverClick: ALBUMCOVER field not found');
-    Exit;
-  end;
+  if not Assigned(BlobField) then Exit;
+  Writeln('ALBUMCOVER field assigned');
 
-  // Open dialog and save BLOB
+  Writeln('Before executing dialog');
   if dlgAlbumCover.Execute then
   begin
-    // Edit dataset safely
+    Writeln('Dialog executed successfully');
+
+    Writeln('Before checking dataset edit state');
     if not (dmMain.qAlbum.State in dsEditModes) then
+    begin
+      Writeln('Dataset not in edit mode, switching to Edit');
       dmMain.qAlbum.Edit;
+    end
+    else
+      Writeln('Dataset already in edit mode');
 
-    try
-      BlobField.LoadFromFile(dlgAlbumCover.FileName);
-      dmMain.qAlbum.Post;
-      Writeln('imgAlbumCoverClick: image saved to DB');
-    except
-      on E: Exception do
-      begin
-        dmMain.qAlbum.Cancel;
-        ShowMessage('Failed to save image to database: ' + E.Message);
-        Exit;
-      end;
-    end;
+    Writeln('Before loading file into blob field');
+    BlobField.LoadFromFile(dlgAlbumCover.FileName);
+    Writeln('File loaded into blob field');
 
-    // Reload image to UI safely
+    Writeln('Before posting dataset');
+    dmMain.qAlbum.Post;
+    Writeln('Dataset posted');
+
+    Writeln('Before clearing image');
     imgAlbumCover.Picture.Clear;
+    Writeln('Image cleared');
+
+    Writeln('Before creating memory stream');
     MemStream := TMemoryStream.Create;
     try
+      Writeln('Before saving blob to stream');
       BlobField.SaveToStream(MemStream);
-      MemStream.Position := 0;
-      imgAlbumCover.Picture.LoadFromStream(MemStream);
-      Writeln('imgAlbumCoverClick: image loaded to UI');
-    finally
-      MemStream.Free;
-      Writeln('imgAlbumCoverClick: memory stream freed');
-    end;
-  end;
-end;
 
+      Writeln('Resetting stream position');
+      MemStream.Position := 0;
+
+      Writeln('Before loading image from stream');
+      imgAlbumCover.Picture.LoadFromStream(MemStream);
+      Writeln('Image loaded from stream');
+    finally
+      Writeln('Freeing memory stream');
+      MemStream.Free;
+    end;
+  end
+  else
+    Writeln('Dialog execution canceled');
+
+  Writeln('imgAlbumCoverClick: end');
+end;
 
 
 { ---------------------- ADD NEW ALBUM ---------------------- }
@@ -234,6 +273,8 @@ begin
     dmMain.qAlbum.Edit;
 end;
 
+
+
 { ---------------------- VIEW TRACKS ---------------------- }
 procedure TpmAlbum.miViewTracksClick(Sender: TObject);
 var
@@ -243,11 +284,11 @@ begin
 
   AlbumID := dmMain.qAlbum.FieldByName('ID').AsInteger;
 
-  // Ensure Tracks form is properly declared and created
-  // Use a singleton pattern or create/destroy manually
-  // Tracks := TTracks.Create(Application);
-  // Tracks.LoadSongsFromAlbum(AlbumID);
-  // Tracks.Show;
+   //Ensure Tracks form is properly declared and created
+   //Use a singleton pattern or create/destroy manually
+   Tracks := TTracks.Create(Application);
+   Tracks.LoadSongsFromAlbum(AlbumID);
+   Tracks.Show;
 
   ShowMessage('Tracks form call placeholder: AlbumID=' + IntToStr(AlbumID));
 end;

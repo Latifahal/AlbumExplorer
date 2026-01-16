@@ -135,7 +135,7 @@ object pmAlbum: TpmAlbum
     Left = 576
     Height = 122
     Hint = 'Add a new album'
-    Top = 392
+    Top = 391
     Width = 29
     Caption = '+'
     Font.Color = clGreen
@@ -148,19 +148,29 @@ object pmAlbum: TpmAlbum
     TabOrder = 3
     OnClick = btnAddNewAlbumClick
   end
+  object btnDeleteAlbum: TButton
+    Left = 576
+    Height = 122
+    Top = 511
+    Width = 29
+    Caption = '-'
+    Font.Color = clMaroon
+    Font.Height = -16
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 4
+    OnClick = btnDeleteAlbumClick
+  end
   object pmAlbum: TPopupMenu
     Left = 512
     Top = 8
-    object miEditAlbum: TMenuItem
-      Caption = 'miEditAlbum'
-      OnClick = miEditAlbumClick
-    end
     object miViewTracks: TMenuItem
       Caption = 'miViewTracks'
     end
   end
   object dlgAlbumCover: TOpenPictureDialog
-    Left = 512
-    Top = 64
+    Left = 511
+    Top = 88
   end
 end

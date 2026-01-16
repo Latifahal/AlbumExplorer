@@ -15,9 +15,6 @@ begin
   Application.CreateForm(TLoginForm, LoginForm);
   //Application.CreateForm(TForm1, Form1);
 
-
-
-
   if LoginForm.Execute then
   begin
     LoginForm.Destroy;
