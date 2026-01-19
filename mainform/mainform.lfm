@@ -119,7 +119,7 @@ object pmAlbum: TpmAlbum
   end
   object imgAlbumCover: TImage
     Cursor = crHandPoint
-    Left = 25
+    Left = 24
     Height = 240
     Hint = 'Click to add or change album cover'
     Top = 8
@@ -167,6 +167,7 @@ object pmAlbum: TpmAlbum
     Top = 8
     object miViewTracks: TMenuItem
       Caption = 'miViewTracks'
+      OnClick = miViewTracksClick
     end
   end
   object dlgAlbumCover: TOpenPictureDialog

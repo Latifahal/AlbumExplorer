@@ -116,6 +116,20 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
       </Unit>
+      <Unit>
+        <Filename Value="mainform/usercredsformunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form2"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UserCredsFormUnit"/>
+      </Unit>
+      <Unit>
+        <Filename Value="mainform/usercredstestunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form3"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UserCredsTestUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

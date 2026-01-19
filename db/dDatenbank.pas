@@ -5,7 +5,7 @@ unit dDatenbank;
 interface
 
 uses
-  Classes, SysUtils, Uni, InterBaseUniProvider, DB;
+  Classes, SysUtils, Uni, InterBaseUniProvider;
 
 type
 
