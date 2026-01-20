@@ -72,13 +72,17 @@ begin
   lblLoginStatusMsg.Caption := 'Login successful';
 
   // store logged-in user ID
-  dmMain.CurrentUserID :=
-    dmMain.qUsersLogin.FieldByName('ID').AsInteger;
+  //dmMain.FCurrentUserID :=
+  //  dmMain.qUsersLogin.FieldByName('ID').AsInteger;
+    dmMain.SetCurrentUser(
+    dmMain.qUsersLogin.FieldByName('ID').AsInteger,
+    dmMain.qUsersLogin.FieldByName('USERNAME').AsString,
+    dmMain.qUsersLogin.FieldByName('EMAIL').AsString
+    );
 
   // open album dataset filtered by user
   dmMain.qAlbum.Close;
-  dmMain.qAlbum.ParamByName('UID').AsInteger :=
-    dmMain.CurrentUserID;
+  dmMain.qAlbum.ParamByName('UID').AsInteger := dmMain.GetCurrentUserID;
   dmMain.qAlbum.ParamByName('SEARCH').AsString := '%';
   dmMain.qAlbum.Open;
 

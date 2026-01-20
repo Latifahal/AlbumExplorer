@@ -95,7 +95,9 @@ begin
 
   BlobField := qUnit1.FieldByName('COLUMN1') as TBlobField;
 
-  if Assigned(BlobField) and (not BlobField.IsNull) and (BlobField.BlobSize > 0) then
+  if Assigned(BlobField) and
+  (not BlobField.IsNull) and
+  (BlobField.BlobSize > 0) then
   begin
     MemStream := TMemoryStream.Create;
     try

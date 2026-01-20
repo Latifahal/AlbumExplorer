@@ -35,13 +35,20 @@ type
     {q and sq for testing}
     sqUnit1:               TUniDataSource;
     qUnit1:                TUniQuery;
+    qUsers:                TUniQuery;
+    sqUsers: TUniDataSource;
 
 
 
   private
-
+    FCurrentUserID:   LongInt;
+    FCurrentUsername: AnsiString;
+    FCurrentEmail:    AnsiString;
   public
-    CurrentUserID: Integer;
+    procedure SetCurrentUser(AID:  LongInt; AUsername, AEmail: AnsiString);
+    function  GetCurrentUserID:   LongInt;
+    function  GetCurrentUsername: AnsiString;
+    function  GetCurrentEmail:    AnsiString;
 
   end;
 
@@ -49,6 +56,28 @@ var
   dmMain: TdmMain;
 
 implementation
+
+procedure TdmMain.SetCurrentUser(AID: LongInt; AUsername, AEmail: AnsiString);
+begin
+  FCurrentUserID   := AID;
+  FCurrentUsername := AUsername;
+  FCurrentEmail    := AEmail;
+end;
+
+function TdmMain.GetCurrentUserID: LongInt;
+begin
+  Result := FCurrentUserID;
+end;
+
+function TdmMain.GetCurrentUserName: AnsiString;
+begin
+  Result := FCurrentUsername;
+end;
+
+function TdmMain.GetCurrentEmail: AnsiString;
+begin
+  Result := FCurrentEmail;
+end;
 
 {$R *.lfm}
 

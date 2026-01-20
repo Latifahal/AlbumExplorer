@@ -12,29 +12,29 @@ uses
 type
   { TpmAlbum }
   TpmAlbum = class(TForm)
-    btnDeleteAlbum: TButton;
-    dbgAlbums: TDBGrid;
-    edtAlbumSearch: TEdit;
-    imgAlbumCover: TImage;
-    lblDescription: TLabel;
-    lblSearch: TLabel;
-    dlgAlbumCover: TOpenPictureDialog;
-    pmAlbum: TPopupMenu;
-    miEditAlbum: TMenuItem;
-    miViewTracks: TMenuItem;
-    btnClearSearch: TSpeedButton;
+    btnDeleteAlbum:         TButton;
+    dbgAlbums:              TDBGrid;
+    edtAlbumSearch:         TEdit;
+    imgAlbumCover:          TImage;
+    lblDescription:         TLabel;
+    lblSearch:              TLabel;
+    dlgAlbumCover:          TOpenPictureDialog;
+    pmAlbum:                TPopupMenu;
+    miEditAlbum:            TMenuItem;
+    miViewTracks:           TMenuItem;
+    btnClearSearch:         TSpeedButton;
     dbMemoAlbumDescription: TDBMemo;
-    btnAddNewAlbum: TButton;
+    btnAddNewAlbum:         TButton;
 
-    procedure btnDeleteAlbumClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure btnDeleteAlbumClick(Sender:  TObject);
+    procedure FormCreate(Sender:           TObject);
+    procedure FormDestroy(Sender:          TObject);
     procedure edtAlbumSearchChange(Sender: TObject);
-    procedure btnClearSearchClick(Sender: TObject);
-    procedure imgAlbumCoverClick(Sender: TObject);
-    procedure miEditAlbumClick(Sender: TObject);
-    procedure miViewTracksClick(Sender: TObject);
-    procedure btnAddNewAlbumClick(Sender: TObject);
+    procedure btnClearSearchClick(Sender:  TObject);
+    procedure imgAlbumCoverClick(Sender:   TObject);
+    procedure miEditAlbumClick(Sender:     TObject);
+    procedure miViewTracksClick(Sender:    TObject);
+    procedure btnAddNewAlbumClick(Sender:  TObject);
 
   private
     FAlbumModel: TAlbumModel;
@@ -73,7 +73,7 @@ begin
   if not AskConfirmation('Are you sure you want to delete this album?') then Exit;
 
   dmMain.qAlbumDelete.ParamByName('ID').AsInteger :=
-    dmMain.qAlbum.FieldByName('ID').AsInteger;
+  dmMain.qAlbum.FieldByName('ID').AsInteger;
   dmMain.qAlbumDelete.Execute;
   dmMain.qAlbum.Refresh;
 end;
@@ -87,7 +87,7 @@ begin
 
   dmMain.sqAlbum.OnDataChange := @AlbumDataChange;
 
-  dmMain.qAlbum.ParamByName('UID').AsInteger := dmMain.CurrentUserID;
+  dmMain.qAlbum.ParamByName('UID').AsInteger := dmMain.GetCurrentUserID;
   dmMain.qAlbum.ParamByName('SEARCH').AsString := '%%';
   dmMain.qAlbum.Open;
 
@@ -155,7 +155,7 @@ begin
   btnClearSearch.Visible := S <> '';
 
   dmMain.qAlbum.Close;
-  dmMain.qAlbum.ParamByName('UID').AsInteger := dmMain.CurrentUserID;
+  dmMain.qAlbum.ParamByName('UID').AsInteger := dmMain.GetCurrentUserID;
 
   if S = '' then
     dmMain.qAlbum.ParamByName('SEARCH').AsString := '%%'
@@ -217,7 +217,7 @@ end;
 procedure TpmAlbum.btnAddNewAlbumClick(Sender: TObject);
 begin
   if Assigned(FAlbumModel) then
-    FAlbumModel.AddNewAlbum(dmMain.CurrentUserID);
+    FAlbumModel.AddNewAlbum(dmMain.GetCurrentUserID);
 end;
 
 { ---------------------- EDIT ALBUM ---------------------- }

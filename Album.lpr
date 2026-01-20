@@ -10,10 +10,10 @@ uses
 
 begin
 
-  Application.Initialize;
+  //Application.Initialize;
   Application.CreateForm(TdmMain, dmMain);
   //Application.CreateForm(TpmAlbum, pmAlbum);
-  Application.CreateForm(TUCTUnit, UCTUnit);
+  Application.CreateForm(TForm3, Form3);
   Application.CreateForm(TLoginForm, LoginForm);
 
   //Application.CreateForm(TForm1, Form1);
@@ -28,5 +28,25 @@ begin
     Application.Terminate;
   end;
    //Application.Run;
+
+  // Application.CreateForm(TdmMain, dmMain);
+  //Application.CreateForm(TForm3, Form3);    // UserCredsTestUnit
+  //Application.CreateForm(TLoginForm, LoginForm);
+  //
+  //if LoginForm.Execute then
+  //begin
+  //  LoginForm.Free;
+  //
+  //  // Fill Form3 labels from dmMain
+  //  Form3.lblUsername.Caption := dmMain.GetCurrentUsername;
+  //  Form3.lblEmail.Caption := dmMain.GetCurrentEmail;
+  //
+  //  Form3.Show;       // show the user info form
+  //  Application.Run;  // run main loop
+  //end
+  //else
+  //begin
+  //  Application.Terminate;
+  //end;
 end.
 

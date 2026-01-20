@@ -78,14 +78,13 @@ object dmMain: TdmMain
   object qUsersLogin: TUniQuery
     Connection = cDatenbank
     SQL.Strings = (
-      'SELECT ID, PWDHASH, PWDSALT'
+      'SELECT ID, USERNAME, EMAIL, PWDHASH, PWDSALT'
       'FROM USERS'
-      'WHERE TRIM(USERNAME) = TRIM(:USERNAME)'
-      ''
+      'WHERE USERNAME = :USERNAME'
     )
     FilterOptions = []
     Left = 105
-    Top = 288
+    Top = 344
     ParamData = <    
       item
         DataType = ftString
@@ -106,7 +105,7 @@ object dmMain: TdmMain
     )
     FilterOptions = []
     Left = 105
-    Top = 480
+    Top = 536
     ParamData = <    
       item
         DataType = ftString
@@ -127,7 +126,7 @@ object dmMain: TdmMain
     )
     FilterOptions = []
     Left = 105
-    Top = 384
+    Top = 440
     ParamData = <    
       item
         DataType = ftString
@@ -159,7 +158,7 @@ object dmMain: TdmMain
     )
     FilterOptions = []
     Left = 105
-    Top = 568
+    Top = 624
     ParamData = <    
       item
         DataType = ftString
@@ -180,7 +179,7 @@ object dmMain: TdmMain
     )
     FilterOptions = []
     Left = 195
-    Top = 384
+    Top = 440
     ParamData = <    
       item
         DataType = ftUnknown
@@ -214,7 +213,7 @@ object dmMain: TdmMain
     )
     FilterOptions = []
     Left = 290
-    Top = 384
+    Top = 440
     ParamData = <    
       item
         DataType = ftUnknown
@@ -228,12 +227,31 @@ object dmMain: TdmMain
       ''
     )
     FilterOptions = []
-    Left = 102
-    Top = 685
+    Left = 520
+    Top = 728
   end
   object sqUnit1: TUniDataSource
     DataSet = qUnit1
-    Left = 168
-    Top = 685
+    Left = 586
+    Top = 728
+  end
+  object qUsers: TUniQuery
+    Connection = cDatenbank
+    SQL.Strings = (
+      'SELECT USERNAME, EMAIL, USERPICTURE FROM USERS WHERE ID = :ID'
+    )
+    FilterOptions = []
+    Left = 105
+    Top = 280
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'ID'
+      end>
+  end
+  object sqUsers: TUniDataSource
+    DataSet = qUsers
+    Left = 208
+    Top = 280
   end
 end

@@ -1,7 +1,34 @@
 object Form3: TForm3
   Left = 512
-  Height = 240
+  Height = 344
   Top = 31
   Width = 320
   Caption = 'Form3'
+  ClientHeight = 344
+  ClientWidth = 320
+  OnCreate = FormCreate
+  object lblUsername: TLabel
+    Left = 89
+    Height = 1
+    Top = 229
+    Width = 1
+  end
+  object lblEmail: TLabel
+    Left = 89
+    Height = 1
+    Top = 278
+    Width = 1
+  end
+  object imgUserPic: TImage
+    Left = 72
+    Height = 90
+    Top = 32
+    Width = 90
+    DragCursor = crHandPoint
+    OnClick = imgUserPicClick
+  end
+  object dlgUserPic: TOpenPictureDialog
+    Left = 235
+    Top = 42
+  end
 end
