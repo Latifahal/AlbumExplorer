@@ -56,7 +56,7 @@ begin
   StoredHash := dmMain.qUsersLogin.FieldByName('PWDHASH').AsString;
   StoredSalt := dmMain.qUsersLogin.FieldByName('PWDSALT').AsString;
 
-  // ✅ password verification (as requested)
+  
   if not VerifyPassword(
        edtUserPassword.Text,
        StoredSalt,
